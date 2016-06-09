@@ -1,51 +1,42 @@
 #!/usr/bin/python
 
 import sys
-import operator
 
 #
-# Get the post frequent byte in a file
+# Moves a char by a numeric value, while staying between 'a' and 'z'
 #
-def solveCesar(inFile):
-	freqs = {}
-	with open(inFile, "rb") as f:
-		byte = f.read(1)
-		byte = byte.encode('hex')
-		while byte != "":
-			if freqs.has_key(byte):
-				freqs[byte] += 1
-			else:
-				freqs[byte] = 1
-			byte = f.read(1)
-			byte = byte.encode('hex')
-	magicByte = max(freqs.iteritems(), key=operator.itemgetter(1))[0]
-	return (int(magicByte, 16) - int("65", 16))
-	
+
+def add_key (letter, key_val):
+	letter_val = ord(letter)
+	val = letter_val + key_val
+	if val>122:
+		return (val - 123 + ord('a'))
+	return val
+
 
 #
-# Rotate bytes by n
-#	
-def clearText(inFile, n):
-	with open(inFile, "rb") as f:
-		byte = f.read(1)
-		byte = byte.encode('hex')
-		outStr = ""
-		while byte != "":
-			outByte = (int(byte, 16) - n) % 256
-			outByte = chr(outByte)
-			outStr = outStr + outByte
-			byte = f.read(1)
-			byte = byte.encode('hex')
-		print outStr
+# Using a string as a key, solves the Vigenere cipher of a text file
+#
+
+def vigenere(key, cipher_text):
+	cipher_text = cipher_text.lower()
+	num_key = []
+	for c in key:
+		num_key.append(chr(ord(c)))
+	i = 0
+	for j in range(len(cipher_text)):
+		c = cipher_text[j]
+		if (ord(c) >= ord('a') && ord(c) <= ord('z')):
+			cipher_text[j] = add_key(c, num_key[i])
+			i = i + 1
+			if i == num_key.len():
+				i=0
+	return cipher_text
 
 
 #
 # Run the script
-#        
+#
+
 args = sys.argv
 
-if len(args) > 1 :
-	n = solveCesar(args[1])
-	i = int(args[2])
-	#for i in range(256):
-	clearText(args[1], i)
