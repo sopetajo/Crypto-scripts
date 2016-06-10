@@ -8,9 +8,9 @@ import sys
 
 def add_key (letter, key_val):
 	letter_val = ord(letter)
-	val = letter_val + key_val
-	if val>122:
-		return (val - 123 + ord('a'))
+	val = letter_val - (key_val - ord('a'))
+	if val<ord('a'):
+		val = val + ord('z') - ord('a') + 1
 	return val
 
 
@@ -20,18 +20,21 @@ def add_key (letter, key_val):
 
 def vigenere(key, cipher_text):
 	cipher_text = cipher_text.lower()
+	clear_text = ""
 	num_key = []
-	for c in key:
-		num_key.append(chr(ord(c)))
+	for c in key.lower():
+		num_key.append(ord(c))
 	i = 0
 	for j in range(len(cipher_text)):
 		c = cipher_text[j]
-		if (ord(c) >= ord('a') && ord(c) <= ord('z')):
-			cipher_text[j] = add_key(c, num_key[i])
+		c = chr(c)
+		if (ord(c) >= ord('a') and ord(c) <= ord('z')):
+			c = chr(add_key(c, num_key[i]))
 			i = i + 1
-			if i == num_key.len():
+			if i == len(num_key):
 				i=0
-	return cipher_text
+		clear_text = clear_text + c
+	return clear_text
 
 
 #
@@ -39,4 +42,16 @@ def vigenere(key, cipher_text):
 #
 
 args = sys.argv
+
+if len(args) > 1 :
+	infile = args[1]
+	key = args[2]
+	with open(infile, "rb") as f:
+		cipher_text = f.read()
+		clear_text = vigenere(key, cipher_text)
+		print(clear_text)
+
+
+#print(chr(add_key(args[1], int(args[2]))))
+
 
