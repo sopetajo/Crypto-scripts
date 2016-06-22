@@ -2,16 +2,33 @@
 
 import sys
 import base64
-import B64_encode.py
 
-def xor_b64(hex1, hex2):
-	bin1 = hex1.decode("hex")
-	bin2 = hex2.decode("hex")
+def xor_hex(hex1, hex2):
+	bytes1 = bytearray.fromhex(hex1)
+	bytes2 = bytearray.fromhex(hex2)
+	n1 = len(bytes1)
+	n2 = len(bytes2)
+	
+	if (n1<n2) :
+		key = bytes1
+		value = bytes2
+	else:
+		key = bytes2
+		value = bytes1
+
+	j = 0
+	for i in range(len(value)):
+		value[i] = value[i]^key[j]
+		j = (j+1)%len(key)
+
+	return value
+
 
 args = sys.argv
 
-data = bytearray.fromhex(args[1])
+hex1 = args[1]
+hex2 = args[2]
 
-encoded = base64.b64encode(data)
+print (xor_hex(hex1,hex2))
 
-print(encoded)
+
